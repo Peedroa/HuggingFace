@@ -214,65 +214,130 @@
 
 # from transformers import T5Tokenizer, T5Model, T5ForConditionalGeneration
 # import time
+
+# # Nomes dos modelos e diretório de cache
 # token_name = 'unicamp-dl/ptt5-base-portuguese-vocab'
 # model_name = 'recogna-nlp/ptt5-base-summ'
+# cache_directory = "E:\\HuggingFaceCache"
 
-# cache_directory= "E:\\HuggingFaceCache"
-
+# # Inicializando o tokenizador com o modelo de vocabulário pré-treinado
 # tokenizer = T5Tokenizer.from_pretrained(token_name, cache_dir=cache_directory)
+
+# # Inicializando o modelo de geração condicional T5 para PyTorch
 # model_pt = T5ForConditionalGeneration.from_pretrained(model_name, cache_dir=cache_directory)
 
+# # Texto que será resumido
 # text = '''
-
-# Descoberta Arqueológica Revela Cidade Antiga Sob as Ruas de Metrópole Moderna
-
-# Em uma surpreendente descoberta arqueológica, uma equipe de pesquisadores anunciou hoje a revelação de uma cidade antiga enterrada sob as ruas movimentadas da metrópole moderna de Urbis Prime. A descoberta ocorreu durante escavações de rotina para a construção de uma nova linha de metrô, quando os arqueólogos notaram vestígios de estruturas antigas.
-
-# A cidade subterrânea, que remonta a aproximadamente 2.000 anos, revela uma complexa rede de ruas, edifícios e até mesmo uma praça central. Artefatos cuidadosamente preservados, incluindo cerâmicas, moedas antigas e fragmentos de murais, foram desenterrados, oferecendo uma visão fascinante da vida cotidiana na época.
-
-# Os arqueólogos acreditam que a cidade pode ter sido um importante centro cultural e comercial em seu tempo, embora a sua existência tenha sido perdida ao longo dos séculos. A descoberta levanta questões intrigantes sobre a história da região e como a paisagem urbana evoluiu ao longo dos milênios.
-
-# Os especialistas agora planejam realizar análises mais aprofundadas para datar com precisão os artefatos e entender melhor o papel dessa cidade antiga na história da civilização. A notícia já despertou o interesse de historiadores, arqueólogos e moradores locais, ansiosos para aprender mais sobre o passado enterrado sob seus próprios pés.
-
-# um fato importante é que acharam corpos.
+#    Adicione aqui o texto que você deseja resumir.
 # '''
 
+# # Medindo o tempo de execução
 # tempo_inicio = time.time()
 
-
+# # Tokenizando o texto e convertendo para tensores PyTorch
 # inputs = tokenizer.encode(text, truncation=True, return_tensors='pt')
-# summary_ids = model_pt.generate(inputs ,max_length=200, min_length=100, num_beams=10, no_repeat_ngram_size=3, early_stopping=True)
+
+# # Gerando o resumo usando o modelo pré-treinado
+# summary_ids = model_pt.generate(inputs,
+#                                 max_length=200,      # comprimento máximo do resumo gerado
+#                                 min_length=100,      # comprimento mínimo do resumo gerado
+#                                 num_beams=10,        # número de feixes usados na geração
+#                                 no_repeat_ngram_size=3,  # evita a repetição de trigramas no resumo
+#                                 early_stopping=True   # interrompe a geração assim que todos os feixes terminam
+#                                 )
+
+# # Decodificando os IDs do resumo de volta para texto
 # summary = tokenizer.decode(summary_ids[0])
+
+# # Medindo o tempo de execução total
 # tempo_fim = time.time()
 # tempo_total = tempo_fim - tempo_inicio
-# print(f"Tempo total de execução: {tempo_total} segundos")
 
+# # Imprimindo o resumo gerado e o tempo de execução
+# print(f"Tempo total de execução: {tempo_total} segundos")
 # print(summary)
+
 
 #endregion
  
 #region USANDO MODELO - OUTRO SUMMARIZATION
 
-# Tokenizer
-from transformers import T5Tokenizer
+# from transformers import T5Tokenizer
 
-# PyTorch model
-from transformers import T5Model, T5ForConditionalGeneration
+# # PyTorch model
+# from transformers import T5Model, T5ForConditionalGeneration
 
-token_name = 'unicamp-dl/ptt5-base-portuguese-vocab'
-model_name = 'phpaiola/ptt5-base-summ-xlsum'
-cache_directory= "E:\\HuggingFaceCache"
+# # Definindo os nomes dos modelos e o diretório de cache
+# token_name = 'unicamp-dl/ptt5-base-portuguese-vocab'
+# model_name = 'phpaiola/ptt5-base-summ-xlsum'
+# cache_directory= "E:\\HuggingFaceCache"
 
-tokenizer = T5Tokenizer.from_pretrained(token_name, cache_dir=cache_directory)
-model_pt = T5ForConditionalGeneration.from_pretrained(model_name, cache_dir=cache_directory)
+# # Inicializando o tokenizador com o modelo de vocabulário pré-treinado
+# tokenizer = T5Tokenizer.from_pretrained(token_name, cache_dir=cache_directory)
 
-text = '''
-“Descoberta Arqueológica Revela Cidade Antiga Sob as Ruas de Metrópole Moderna 1 de fevereiro de 2024 Em uma surpreendente descoberta arqueológica, uma equipe de pesquisadores anunciou hoje a revelação de uma cidade antiga enterrada sob as ruas movimentadas da metrópole moderna de Urbis Prime. A descoberta ocorreu durante escavações de rotina para a construção de uma nova linha de metrô, quando os arqueólogos notaram vestígios de estruturas antigas. A cidade subterrânea, que remonta a aproximadamente 2.000 anos, revela uma complexa rede de ruas, edifícios e até mesmo uma praça central. Artefatos cuidadosamente preservados, incluindo cerâmicas, moedas antigas e fragmentos de murais, foram desenterrados, oferecendo uma visão fascinante da vida cotidiana na época. Os arqueólogos acreditam que a cidade pode ter sido um importante centro cultural e comercial em seu tempo, embora a sua existência tenha sido perdida ao longo dos séculos. A descoberta levanta questões intrigantes sobre a história da região e como a 
-paisagem urbana evoluiu ao longo dos milênios. Os especialistas agora planejam realizar análises mais aprofundadas para datar com precisão os artefatos e entender melhor o papel dessa cidade antiga na história da civilização. A notícia já despertou o interesse de historiadores, arqueólogos e moradores locais, ansiosos para aprender mais sobre o passado enterrado sob seus próprios pés.
-'''
+# # Inicializando o modelo de geração condicional T5 para PyTorch
+# model_pt = T5ForConditionalGeneration.from_pretrained(model_name, cache_dir=cache_directory)
 
-inputs = tokenizer.encode(text, max_length=len(text), truncation=True, return_tensors='pt')
-summary_ids = model_pt.generate(inputs, max_length=200, min_length=100, num_beams=5, no_repeat_ngram_size=3, early_stopping=True)
-summary = tokenizer.decode(summary_ids[0])
-print(summary)
+# # Texto que será resumido
+# text = '''
+#    Adicione aqui o texto que você deseja resumir.
+# '''
+
+# # Tokenizando o texto e convertendo para tensores PyTorch
+# inputs = tokenizer.encode(text, max_length=len(text), truncation=True, return_tensors='pt')
+
+# # Gerando o resumo usando o modelo pré-treinado
+# summary_ids = model_pt.generate(inputs, 
+#                                 max_length=200,      # comprimento máximo do resumo gerado
+#                                 min_length=100,      # comprimento mínimo do resumo gerado
+#                                 num_beams=5,         # número de feixes usados na geração
+#                                 no_repeat_ngram_size=3,  # evita a repetição de trigramas no resumo
+#                                 early_stopping=True   # interrompe a geração assim que todos os feixes terminam
+#                                 )
+
+# # Decodificando os IDs do resumo de volta para texto
+# summary = tokenizer.decode(summary_ids[0])
+
+# # Imprimindo o resumo gerado
+# print(summary)
+
+#endregion
+
+#region USNAOD MODELO - TEXT EMBEDDINGS
+
+# from transformers import AutoTokenizer, AutoModel
+# import torch
+# import torch.nn.functional as F
+
+# cache_directory= "E:\\HuggingFaceCache"
+# #Mean Pooling - Take attention mask into account for correct averaging
+# def mean_pooling(model_output, attention_mask):
+#     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+#     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+#     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+
+# # Sentences we want sentence embeddings for
+# sentences = ['This is an example sentence', 'Each sentence is converted']
+
+# # Load model from HuggingFace Hub
+# tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/all-MiniLM-L6-v2', cache_dir=cache_directory)
+# model = AutoModel.from_pretrained('sentence-transformers/all-MiniLM-L6-v2', cache_dir=cache_directory)
+
+# # Tokenize sentences
+# encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+
+# # Compute token embeddings
+# with torch.no_grad():
+#     model_output = model(**encoded_input)
+
+# # Perform pooling
+# sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
+
+# # Normalize embeddings
+# sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
+
+# print("Sentence embeddings:")
+# print(sentence_embeddings)
+
 #endregion
