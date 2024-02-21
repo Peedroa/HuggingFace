@@ -251,4 +251,28 @@
 
 #endregion
  
+#region USANDO MODELO - OUTRO SUMMARIZATION
 
+# Tokenizer
+from transformers import T5Tokenizer
+
+# PyTorch model
+from transformers import T5Model, T5ForConditionalGeneration
+
+token_name = 'unicamp-dl/ptt5-base-portuguese-vocab'
+model_name = 'phpaiola/ptt5-base-summ-xlsum'
+cache_directory= "E:\\HuggingFaceCache"
+
+tokenizer = T5Tokenizer.from_pretrained(token_name, cache_dir=cache_directory)
+model_pt = T5ForConditionalGeneration.from_pretrained(model_name, cache_dir=cache_directory)
+
+text = '''
+“Descoberta Arqueológica Revela Cidade Antiga Sob as Ruas de Metrópole Moderna 1 de fevereiro de 2024 Em uma surpreendente descoberta arqueológica, uma equipe de pesquisadores anunciou hoje a revelação de uma cidade antiga enterrada sob as ruas movimentadas da metrópole moderna de Urbis Prime. A descoberta ocorreu durante escavações de rotina para a construção de uma nova linha de metrô, quando os arqueólogos notaram vestígios de estruturas antigas. A cidade subterrânea, que remonta a aproximadamente 2.000 anos, revela uma complexa rede de ruas, edifícios e até mesmo uma praça central. Artefatos cuidadosamente preservados, incluindo cerâmicas, moedas antigas e fragmentos de murais, foram desenterrados, oferecendo uma visão fascinante da vida cotidiana na época. Os arqueólogos acreditam que a cidade pode ter sido um importante centro cultural e comercial em seu tempo, embora a sua existência tenha sido perdida ao longo dos séculos. A descoberta levanta questões intrigantes sobre a história da região e como a 
+paisagem urbana evoluiu ao longo dos milênios. Os especialistas agora planejam realizar análises mais aprofundadas para datar com precisão os artefatos e entender melhor o papel dessa cidade antiga na história da civilização. A notícia já despertou o interesse de historiadores, arqueólogos e moradores locais, ansiosos para aprender mais sobre o passado enterrado sob seus próprios pés.
+'''
+
+inputs = tokenizer.encode(text, max_length=len(text), truncation=True, return_tensors='pt')
+summary_ids = model_pt.generate(inputs, max_length=200, min_length=100, num_beams=5, no_repeat_ngram_size=3, early_stopping=True)
+summary = tokenizer.decode(summary_ids[0])
+print(summary)
+#endregion
