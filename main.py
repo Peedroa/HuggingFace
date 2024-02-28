@@ -1,15 +1,12 @@
 #region TREINANDO MODELO - SENTIMENTOS
 
-#----------------------------------------------------------------------
-
 # import torch
 # import torch.nn as nn
-# import torch.optim as optim
 # from torch.utils.data import DataLoader, Dataset
 # from torch.nn.utils.rnn import pad_sequence
 # from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 
-# # Dados de treinamento (exemplo simples)
+# # Dados de exemplo
 # texts = [
 #     "Este é um ótimo produto!",
 #     "Não gostei da qualidade.",
@@ -19,14 +16,22 @@
 #     "Não recomendaria este produto a ninguém.",
 #     "Este produto é muito ruim."
 # ]
-# labels = [1, 0, 1, 1, 1, 0, 0] # 1 para positivo, 0 para negativo
+# labels = [1, 0, 1, 1, 1, 0, 0] 
 
-# # Tokenização
+# # Tokenizador BERT
 # tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
-# # Criando dataset
+# # Classe para o conjunto de dados
 # class SentimentDataset(Dataset):
 #     def __init__(self, texts, labels, tokenizer):
+#         """
+#         Construtor da classe SentimentDataset.
+
+#         Parâmetros:
+#         - texts: Lista de strings contendo os textos.
+#         - labels: Lista de rótulos associados aos textos.
+#         - tokenizer: Objeto do tokenizador BERT.
+#         """
 #         self.texts = texts
 #         self.labels = labels
 #         self.tokenizer = tokenizer
@@ -35,7 +40,16 @@
 #         return len(self.texts)
 
 #     def __getitem__(self, idx):
-#         # Tokenizando o texto usando o BERT Tokenizer
+#         """
+#         Obtém um item do conjunto de dados.
+
+#         Parâmetros:
+#         - idx: Índice do item a ser recuperado.
+
+#         Retorna:
+#         Dicionário contendo o texto original, rótulo e IDs dos tokens.
+#         """
+#         # Tokenizar texto
 #         tokenized_text = self.tokenizer(
 #             self.texts[idx],
 #             padding=True,
@@ -43,54 +57,63 @@
 #             return_tensors="pt"
 #         )
 #         return {
-#             "text": self.texts[idx],  # Texto original
-#             "label": torch.tensor(self.labels[idx], dtype=torch.long),  # Rótulo (1 para positivo, 0 para negativo)
-#             "input_ids": tokenized_text["input_ids"],  # IDs de tokens gerados pelo Tokenizer
+#             "text": self.texts[idx],  
+#             "label": torch.tensor(self.labels[idx], dtype=torch.long),
+#             "input_ids": tokenized_text["input_ids"], 
 #         }
 
+# # Função para combinar batches no DataLoader
 # def collate_fn(batch):
-#     # Empacotando os input_ids, adicionando padding para lidar com sequências de comprimentos variáveis
+#     """
+#     Função utilizada pelo DataLoader para combinar batches.
+
+#     Parâmetros:
+#     - batch: Lista de itens do conjunto de dados.
+
+#     Retorna:
+#     Dicionário contendo input_ids e labels.
+#     """
+#     # Preencher sequências para terem o mesmo comprimento
 #     input_ids = pad_sequence([item["input_ids"].squeeze() for item in batch], batch_first=True, padding_value=tokenizer.pad_token_id)
-#     labels = torch.tensor([item["label"] for item in batch], dtype=torch.long)  # Coletando os rótulos
+#     labels = torch.tensor([item["label"] for item in batch], dtype=torch.long)  
 
 #     return {"input_ids": input_ids, "label": labels}
 
-# # Criando o DataLoader com a função collate_fn personalizada
+# # Criar conjunto de dados e DataLoader
 # dataset = SentimentDataset(texts, labels, tokenizer)
 # dataloader = DataLoader(dataset, batch_size=2, shuffle=True, collate_fn=collate_fn)
 
-# # Modelo BERT para classificação de sequências
+# # Inicializar modelo BERT para classificação de sequências
 # model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
 
-
-# # ajustar os pesos do modelo durante o treinamento para minimizar a função de perda.
-# # lr=2e-5 define a taxa de aprendizado (learning rate) para o otimizador. A taxa de aprendizado controla o tamanho dos passos que o otimizador dá para atualizar os pesos do modelo. 
-
-# # Configurando otimizador e função de perda
+# # Configurar otimizador e função de perda
 # optimizer = AdamW(model.parameters(), lr=2e-5)
 # criterion = nn.CrossEntropyLoss()
 
-# # Treinamento do modelo
-    
-# # num_epochs - é o número total de vezes que o conjunto de treinamento será percorrido durante o treinamento.
-# # for epoch in range(num_epochs) - percorre cada época, permitindo que o modelo seja treinado em várias iterações.
-
+# # Número de épocas de treinamento
 # num_epochs = 3
+
+# # Loop de treinamento
 # for epoch in range(num_epochs):
 #     for batch in dataloader:
+#         # Limpar gradientes
 #         optimizer.zero_grad()
+        
+#         # Obter saída do modelo
 #         outputs = model(batch["input_ids"], labels=batch["label"])
 #         loss = outputs.loss
+        
+#         # Retropropagar o erro e atualizar pesos
 #         loss.backward()
 #         optimizer.step()
 
-# # Salvando o modelo treinado
+# # Salvar modelo treinado
 # model.save_pretrained("modelo_treinado")
 
-# # Carregando o modelo treinado
-# model = BertForSequenceClassification.from_pretrained("modelo_treinado")
+# # Carregar modelo treinado
+# model = BertForSequenceClassification.from_pretrained("sentiment_model")
 
-# # Tokenizando um novo texto de entrada para fazer uma previsão
+# # Inferência com o modelo treinado
 # input_text = "Este é um produto incrível!"
 # input_ids = tokenizer.encode(input_text, add_special_tokens=True, return_tensors="pt")
 # with torch.no_grad():
@@ -98,11 +121,9 @@
 #     logits = outputs.logits
 #     predicted_class = torch.argmax(logits).item()
 
-# # Exibindo a previsão
+# # Determinar sentimento previsto
 # sentiment = "positivo" if predicted_class == 1 else "negativo"
 # print(f"Sentimento previsto: {sentiment}")
-
-#----------------------------------------------------------------------
 
 #region USANDO MODELO DE SENTIMENTOS 
 #----------------------------------------------------------------------
@@ -303,7 +324,7 @@
 
 #endregion
 
-#region USNAOD MODELO - TEXT EMBEDDINGS
+#region USANDO MODELO - TEXT EMBEDDINGS
 
 # from transformers import AutoTokenizer, AutoModel
 # import torch
@@ -341,3 +362,26 @@
 # print(sentence_embeddings)
 
 #endregion
+
+#region USANDO MODELO - TRANSLATION
+
+# from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+
+# cache_directory = "E:\\HuggingFaceCache"
+# tokenizer = AutoTokenizer.from_pretrained("unicamp-dl/translation-pt-en-t5", cache_dir=cache_directory)
+
+# model = AutoModelForSeq2SeqLM.from_pretrained("unicamp-dl/translation-pt-en-t5", cache_dir=cache_directory)
+
+
+# text = """
+# Uma equipe de pesquisadores liderada pelo Dr. Elena Rodriguez, astrobióloga da Universidade de Tecnologia Avançada, encontrou evidências intrigantes durante uma análise detalhada de dados coletados pelo telescópio espacial de última geração.
+# Os dados, obtidos ao longo de meses de observação, revelam padrões espectrais incomuns em uma região distante da galáxia. Esses padrões, até então inexplicáveis, sugerem a presença de moléculas complexas que são, surpreendentemente, análogas a certos compostos orgânicos encontrados na Terra, fundamentais para a vida como a conhecemos.
+# O Dr. Rodriguez enfatiza que é prematuro concluir a existência de vida extraterrestre, mas as descobertas oferecem um ponto de partida empolgante para investigações mais aprofundadas. A comunidade científica agora está mobilizando esforços para direcionar telescópios adicionais para a área em questão, na esperança de confirmar e entender melhor a origem desses sinais misteriosos.
+# A notícia já gerou um grande entusiasmo entre os entusiastas da exploração espacial e astrobiologia, alimentando a esperança de que, finalmente, estamos mais perto do que nunca de responder à antiga pergunta: estamos sozinhos no universo? O mundo aguarda ansiosamente por mais desenvolvimentos conforme os cientistas continuam a desvendar os segredos desse fascinante mistério cósmico.
+# """
+# pten_pipeline = pipeline('text2text-generation', model=model, tokenizer=tokenizer, max_new_tokens=len(text))
+
+# result = pten_pipeline(f"""translate Portuguese to English: {text}""")
+# print(result)
+#endregion
+
